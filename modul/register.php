@@ -1,64 +1,93 @@
-<?php include '../lib/koneksi.php'; ?>
+<?php
+session_start();
+include '../lib/koneksi.php';
+
+$message = '';
+
+if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+  $username = trim($_POST['username']);
+  $first = trim($_POST['firstname']);
+  $last = trim($_POST['lastname']);
+  $email = trim($_POST['email']);
+  $password = password_hash($_POST['password'], PASSWORD_DEFAULT);
+
+  // Cek user sudah ada
+  $check = $pdo->prepare("SELECT * FROM user WHERE UserName = ?");
+  $check->execute([$username]);
+
+  if ($check->rowCount() > 0) {
+    $message = '<div class="alert alert-danger">Username sudah digunakan!</div>';
+  } else {
+    $stmt = $pdo->prepare("INSERT INTO user (UserName, FirstName, LastName, Email, Password) VALUES (?, ?, ?, ?, ?)");
+    if ($stmt->execute([$username, $first, $last, $email, $password])) {
+      $message = '<div class="alert alert-success">Registrasi berhasil! <a href="login.php">Login sekarang</a>.</div>';
+    } else {
+      $message = '<div class="alert alert-danger">Terjadi kesalahan, coba lagi.</div>';
+    }
+  }
+}
+?>
 <!DOCTYPE html>
 <html lang="id">
 <head>
   <meta charset="UTF-8">
-  <title>Register</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Register - X Clone</title>
   <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
   <style>
-    body {
-      background: linear-gradient(135deg, #ece9e6, #ffffff);
-    }
-    .register-card {
-      width: 400px;
-      background-color: #fff;
-      border-radius: 15px;
-      box-shadow: 0 4px 12px rgba(0,0,0,0.1);
-      padding: 2rem;
-    }
+    body { transition: .3s; }
+    body.dark-mode { background-color: #000; color: #e7e9ea; }
+    .card { border-radius: 20px; }
+    body.dark-mode .card { background-color: #121212; border: 1px solid #333; }
+    body.dark-mode .form-control { background-color: #1e1e1e; color: #fff; border-color: #333; }
+    body.dark-mode .btn-primary { background-color: #1d9bf0; border: none; }
+    .toggle-dark { position: fixed; top: 1rem; right: 1rem; }
   </style>
 </head>
-<body class="d-flex align-items-center justify-content-center vh-100">
-  <div class="register-card">
-    <h4 class="text-center mb-4 fw-bold">Daftar Akun Baru</h4>
+<body>
+<div class="toggle-dark">
+  <button id="darkToggle" class="btn btn-outline-light btn-sm"><i class="fa-solid fa-moon"></i></button>
+</div>
+
+<div class="container d-flex align-items-center justify-content-center vh-100">
+  <div class="card p-4 shadow w-100" style="max-width: 420px;">
+    <h3 class="text-center mb-3">Buat Akun Baru</h3>
+    <?= $message ?>
     <form method="POST">
-      <div class="row">
-        <div class="col-md-6 mb-2">
-          <input type="text" name="firstname" class="form-control" placeholder="Nama Depan" required>
-        </div>
-        <div class="col-md-6 mb-2">
-          <input type="text" name="lastname" class="form-control" placeholder="Nama Belakang">
-        </div>
+      <div class="mb-3">
+        <label class="form-label">Username</label>
+        <input type="text" name="username" class="form-control" required>
       </div>
-      <input type="text" name="username" class="form-control mb-2" placeholder="Username" required>
-      <input type="email" name="email" class="form-control mb-2" placeholder="Email" required>
-      <input type="password" name="password" class="form-control mb-2" placeholder="Password (min. 6 karakter)" required>
-      <button name="register" class="btn btn-primary w-100 mt-2">Daftar</button>
+      <div class="mb-3">
+        <label class="form-label">Nama Depan</label>
+        <input type="text" name="firstname" class="form-control">
+      </div>
+      <div class="mb-3">
+        <label class="form-label">Nama Belakang</label>
+        <input type="text" name="lastname" class="form-control">
+      </div>
+      <div class="mb-3">
+        <label class="form-label">Email</label>
+        <input type="email" name="email" class="form-control">
+      </div>
+      <div class="mb-3">
+        <label class="form-label">Password</label>
+        <input type="password" name="password" class="form-control" required>
+      </div>
+      <button class="btn btn-primary w-100">Daftar</button>
     </form>
-
-    <?php
-    if (isset($_POST['register'])) {
-      $firstname = trim($_POST['firstname']);
-      $lastname  = trim($_POST['lastname']);
-      $username  = trim($_POST['username']);
-      $email     = trim($_POST['email']);
-      $password  = $_POST['password'];
-
-      if (strlen($password) < 6) {
-        echo "<div class='alert alert-warning mt-3'>Password minimal 6 karakter!</div>";
-      } else {
-        $cek = mysqli_query($conn, "SELECT * FROM User WHERE username='$username' OR email='$email'");
-        if (mysqli_num_rows($cek) > 0) {
-          echo "<div class='alert alert-danger mt-3'>Username atau Email sudah digunakan!</div>";
-        } else {
-          $hash = password_hash($password, PASSWORD_DEFAULT);
-          mysqli_query($conn, "INSERT INTO User (firstname, lastname, username, email, password) 
-                               VALUES ('$firstname', '$lastname', '$username', '$email', '$hash')");
-          echo "<div class='alert alert-success mt-3'>Berhasil daftar! Silakan <a href='login.php'>login</a>.</div>";
-        }
-      }
-    }
-    ?>
+    <p class="text-center mt-3">Sudah punya akun? <a href="login.php">Login</a></p>
   </div>
+</div>
+
+<script>
+const toggle = document.getElementById('darkToggle');
+if(localStorage.getItem('theme') === 'dark'){ document.body.classList.add('dark-mode'); }
+toggle.addEventListener('click', () => {
+  document.body.classList.toggle('dark-mode');
+  localStorage.setItem('theme', document.body.classList.contains('dark-mode') ? 'dark' : 'light');
+});
+</script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/js/all.min.js"></script>
 </body>
 </html>

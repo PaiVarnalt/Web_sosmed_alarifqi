@@ -1,12 +1,13 @@
 <?php
-$host = "localhost";
-$user = "root";
-$pass = "rpl12345";
-$db   = "db_sosmed"; // ganti sesuai nama database kamu
+$host = 'localhost';
+$dbname = 'db_sosmed';
+$username = 'root';
+$password = 'rpl12345';
 
-$conn = mysqli_connect($host, $user, $pass, $db);
-
-if (!$conn) {
-  die("Koneksi gagal: " . mysqli_connect_error());
+try {
+  $pdo = new PDO("mysql:host=$host;dbname=$dbname;charset=utf8", $username, $password);
+  $pdo->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
+} catch (PDOException $e) {
+  die("Koneksi gagal: " . $e->getMessage());
 }
 ?>
