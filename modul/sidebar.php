@@ -46,10 +46,10 @@ if (isset($_SESSION['username'])) {
     </div>
 
     <nav class="nav flex-column">
-      <a href="index.php" class="nav-link"><i class="fa-solid fa-house"></i> <span>Home</span></a>
-      <a href="modul/explore.php" class="nav-link"><i class="fa-solid fa-magnifying-glass"></i> <span>Explore</span></a>
+      <a href="../index.php" class="nav-link"><i class="fa-solid fa-house"></i> <span>Home</span></a>
+      <a href="explore.php" class="nav-link"><i class="fa-solid fa-magnifying-glass"></i> <span>Explore</span></a>
       
-      <a href="modul/notifications.php" class="nav-link d-flex justify-content-between align-items-center">
+      <a href="notifications.php" class="nav-link d-flex justify-content-between align-items-center">
           <div>
               <i class="fa-regular fa-bell"></i> <span>Notifications</span>
           </div>
@@ -58,10 +58,10 @@ if (isset($_SESSION['username'])) {
           <?php endif; ?>
       </a>
       
-      <a href="modul/messages.php" class="nav-link"><i class="fa-regular fa-envelope"></i> <span>Messages</span></a>
-      <a href="modul/bookmarks.php" class="nav-link"><i class="fa-regular fa-bookmark"></i> <span>Bookmarks</span></a>
-      <a href="modul/communities.php" class="nav-link"><i class="fa-solid fa-user-group"></i> <span>Communities</span></a>
-      <a href="modul/profile.php" class="nav-link"><i class="fa-regular fa-user"></i> <span>Profile</span></a>
+      <a href="messages.php" class="nav-link"><i class="fa-regular fa-envelope"></i> <span>Messages</span></a>
+      <a href="bookmarks.php" class="nav-link"><i class="fa-regular fa-bookmark"></i> <span>Bookmarks</span></a>
+      <a href="communities.php" class="nav-link"><i class="fa-solid fa-user-group"></i> <span>Communities</span></a>
+      <a href="profile.php" class="nav-link"><i class="fa-regular fa-user"></i> <span>Profile</span></a>
       <a href="#" class="nav-link"><i class="fa-solid fa-gear"></i> <span>Settings</span></a>
     </nav>
 
