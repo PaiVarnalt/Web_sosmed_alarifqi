@@ -113,5 +113,19 @@ htmlspecialchars($p['Text']) .
  </div>
 </div>
 
+
+<script>
+const toggle = document.getElementById('darkToggle');
+if(toggle){
+  toggle.addEventListener('click', () => {
+    document.body.classList.toggle('dark-mode');
+    localStorage.setItem('theme', document.body.classList.contains('dark-mode') ? 'dark-mode' : '');
+  });
+}
+
+if(localStorage.getItem('theme') === 'dark-mode'){
+  document.body.classList.add('dark-mode');
+}
+</script>
 </body>
 </html>

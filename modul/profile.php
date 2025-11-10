@@ -7,30 +7,22 @@ if (!isset($_SESSION['username'])) {
   exit;
 }
 
-$current_user = $_SESSION['username'];
-$view_user = trim($_GET['u'] ?? $current_user); // Tentukan user yang dilihat
+// 1. STANDARISASI CASE: User saat ini dan user yang dilihat
+$current_user = strtolower(trim($_SESSION['username']));
+$view_user_raw = trim($_GET['u'] ?? $current_user);
+$view_user = strtolower($view_user_raw); 
 
-// 1. Ambil Data Profil User yang Dilihat
+// 2. Ambil Data Profil User yang Dilihat
 $u_data = $pdo->prepare("SELECT * FROM user WHERE UserName = ?");
 $u_data->execute([$view_user]);
 $profile = $u_data->fetch(PDO::FETCH_ASSOC);
 
 if (!$profile) {
+    // Pengguna tidak ditemukan, tapi menggunakan username yang sudah distandarisasi
     die("Pengguna @{$view_user} tidak ditemukan.");
 }
 
 // Tentukan path foto profil.
-// ... (Bagian 1. Ambil Data Profil User yang Dilihat)
-$u_data->execute([$view_user]);
-$profile = $u_data->fetch(PDO::FETCH_ASSOC);
-
-if (!$profile) {
-    die("Pengguna @{$view_user} tidak ditemukan.");
-}
-
-// Kolom FOTO PROFIL sudah ditambahkan ke tabel user.
-// Tentukan path foto profil.
-// Asumsi: Foto profil disimpan di '../asset/img/namafile.jpg'
 if (!empty($profile['FotoProfil'])) {
     $foto_profil = '../asset/img/user/' . $profile['FotoProfil'];
 } else {
@@ -38,8 +30,7 @@ if (!empty($profile['FotoProfil'])) {
     $foto_profil = '../asset/img/user/default.jpg';
 }
 
-// ... (lanjut ke Bagian 2. Hitung Followers & Following)
-// 2. Hitung Followers & Following
+// 3. Hitung Followers & Following (Gunakan $view_user yang sudah distandarisasi)
 $q_followers = $pdo->prepare("SELECT COUNT(*) FROM follow WHERE FollowName = ?");
 $q_followers->execute([$view_user]);
 $total_followers = $q_followers->fetchColumn(); 
@@ -48,9 +39,10 @@ $q_following = $pdo->prepare("SELECT COUNT(*) FROM follow WHERE UserName = ?");
 $q_following->execute([$view_user]);
 $total_following = $q_following->fetchColumn(); 
 
-// 3. Cek Status Follow
+// 4. Cek Status Follow
 $is_following = false;
 if ($current_user != $view_user) {
+    // Cek dengan user yang sudah distandarisasi
     $check = $pdo->prepare("SELECT COUNT(*) FROM follow WHERE UserName = ? AND FollowName = ?");
     $check->execute([$current_user, $view_user]);
     $is_following = $check->fetchColumn() > 0;
@@ -61,38 +53,36 @@ if ($current_user != $view_user) {
 <!DOCTYPE html>
 <html lang="id">
 <head>
-  <meta charset="UTF-8">
-  <title>Profil @<?= $view_user ?> - X Clone</title>
-  <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" rel="stylesheet">
-  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
-  <link href="../asset/css/stlye.css" rel="stylesheet">
+    <meta charset="UTF-8">
+    <title>Profil @<?= htmlspecialchars($view_user) ?> - X Clone</title>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="../asset/css/stlye.css" rel="stylesheet">
 </head>
 <body class="bg-light">
 
 <div class="container-fluid">
     <div class="row">
         
-
-            <?php include 'sidebar.php'; ?>
-
+        <?php include 'sidebar.php'; ?>
         
         <div class="col-md-9 p-3 border-start"> 
             
             <div class="mb-3">
                 <img src="<?= htmlspecialchars($foto_profil) ?>" 
-                     alt="Foto Profil <?= htmlspecialchars($view_user) ?>" 
-                     width="120" height="120" class="rounded-circle border border-2 shadow-sm">
+                    alt="Foto Profil <?= htmlspecialchars($view_user) ?>" 
+                    width="120" height="120" class="rounded-circle border border-2 shadow-sm">
             </div>
 
             <div class="d-flex justify-content-between align-items-center mb-3">
                 <div>
-                    <h4 class="fw-bold mb-0">@<?= htmlspecialchars($view_user) ?></h4>
+                    <h4 class="fw-bold mb-0">@<?= htmlspecialchars($profile['UserName']) ?></h4>
                     <h5 class="text-muted mt-0"><?= htmlspecialchars($profile['FirstName'] . ' ' . $profile['LastName']) ?></h5>
                 </div>
                 
                 <?php if ($current_user != $view_user): ?>
                 <a href="action_follow.php?user=<?= urlencode($view_user) ?>" 
-                   class="btn <?= $is_following ? 'btn-danger' : 'btn-dark' ?>">
+                    class="btn <?= $is_following ? 'btn-danger' : 'btn-dark' ?>">
                     <?= $is_following ? 'Unfollow' : 'Follow' ?>
                 </a>
                 <?php endif; ?>
@@ -107,7 +97,7 @@ if ($current_user != $view_user) {
             
             <h5>Postingan</h5>
             <?php
-            // Ambil postingan user ini dengan JOIN untuk mengambil nama gambar
+            // Ambil postingan user ini (menggunakan $view_user yang sudah distandarisasi)
             $posts = $pdo->prepare("
                 SELECT 
                     p.PostID,
@@ -126,18 +116,14 @@ if ($current_user != $view_user) {
                 while ($post = $posts->fetch(PDO::FETCH_ASSOC)) {
                     $post_id = $post['PostID'];
                     
-                    // --- Logika untuk Like, Comment, Bookmark diabaikan dari snippet ini
-                    // --- tetapi Anda harus menempatkannya di sini
+                    // ... (Logika Postingan)
                     
                     echo "<div class='border rounded p-3 mb-3 bg-white shadow-sm'>";
                     
-                    // TAMPILKAN GAMBAR POSTINGAN
                     if (!empty($post['ImageName'])) {
-                        // Asumsi lokasi file gambar adalah: ../asset/img/post/
                         echo "<img src='../asset/img/post/" . htmlspecialchars($post['ImageName']) . "' class='img-fluid rounded mb-2' alt='Post Image'>";
                     }
 
-                    // Tampilkan Teks Post
                     echo "<div>" . htmlspecialchars($post['Text']) . "</div>";
                     
                     // --- Tempatkan Tombol Interaksi (Like, Comment, Bookmark) di sini
@@ -153,5 +139,20 @@ if ($current_user != $view_user) {
         
     </div>
 </div>
+
+<script>
+// Kode Dark Mode dari Anda
+const toggle = document.getElementById('darkToggle');
+if(toggle){
+    toggle.addEventListener('click', () => {
+        document.body.classList.toggle('dark-mode');
+        localStorage.setItem('theme', document.body.classList.contains('dark-mode') ? 'dark-mode' : '');
+    });
+}
+
+if(localStorage.getItem('theme') === 'dark-mode'){
+    document.body.classList.add('dark-mode');
+}
+</script>
 </body>
 </html>

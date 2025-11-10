@@ -141,4 +141,17 @@ $current_user_name = $_SESSION['username'];
     </div>
 </div>
 </body>
+<script>
+const toggle = document.getElementById('darkToggle');
+if(toggle){
+  toggle.addEventListener('click', () => {
+    document.body.classList.toggle('dark-mode');
+    localStorage.setItem('theme', document.body.classList.contains('dark-mode') ? 'dark-mode' : '');
+  });
+}
+
+if(localStorage.getItem('theme') === 'dark-mode'){
+  document.body.classList.add('dark-mode');
+}
+</script>
 </html>

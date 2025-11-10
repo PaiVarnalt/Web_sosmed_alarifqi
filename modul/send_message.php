@@ -7,8 +7,9 @@ if (!isset($_SESSION['username'])) {
     exit;
 }
 
-$sender = $_SESSION['username'];
-$receiver = $_POST['receiver'] ?? null;
+// >>> STANDARISASI CASE Wajib
+$sender = strtolower(trim($_SESSION['username']));
+$receiver = strtolower(trim($_POST['receiver'] ?? null));
 $message_text = trim($_POST['message_text'] ?? '');
 
 if (empty($receiver) || empty($message_text) || $sender == $receiver) {
@@ -16,34 +17,33 @@ if (empty($receiver) || empty($message_text) || $sender == $receiver) {
     exit;
 }
 
+// 🛑 VALIDASI MUTUAL FOLLOW KEMBALI DI SINI
+$q_check_mutual = $pdo->prepare("
+    SELECT COUNT(*) 
+    FROM follow f1
+    JOIN follow f2 ON f1.UserName = f2.FollowName AND f1.FollowName = f2.UserName
+    WHERE f1.UserName = ? AND f1.FollowName = ?
+");
+$q_check_mutual->execute([$sender, $receiver]);
+$is_allowed_to_chat = $q_check_mutual->fetchColumn() > 0;
+
+if (!$is_allowed_to_chat) {
+    // Jika tidak saling follow, tidak ada pesan yang terkirim. Redirect.
+    header("Location: messages.php?error=not_authorized");
+    exit;
+}
+// 🛑 AKHIR VALIDASI MUTUAL FOLLOW
+
 try {
-    // 1. CEK STATUS SALING FOLLOW (MUTUAL FOLLOW)
-    $q_check_follow = $pdo->prepare("
-        SELECT 
-            (SELECT COUNT(*) FROM follow WHERE UserName = ? AND FollowName = ?) AS is_following_receiver,
-            (SELECT COUNT(*) FROM follow WHERE UserName = ? AND FollowName = ?) AS is_followed_by_receiver
+    // INSERT pesan ke database
+    $q = $pdo->prepare("
+        INSERT INTO messages (SenderUser, ReceiverUser, MessageText) 
+        VALUES (?, ?, ?)
     ");
-    $q_check_follow->execute([$sender, $receiver, $receiver, $sender]);
-    $follow_status = $q_check_follow->fetch(PDO::FETCH_ASSOC);
-
-    $is_mutual_follow = ($follow_status['is_following_receiver'] > 0 && $follow_status['is_followed_by_receiver'] > 0);
-
-    // 2. Jika saling follow, lanjutkan pengiriman pesan
-    if ($is_mutual_follow) {
-        // Simpan pesan ke database
-        $q = $pdo->prepare("
-            INSERT INTO messages (SenderUser, ReceiverUser, MessageText) 
-            VALUES (?, ?, ?)
-        ");
-        $q->execute([$sender, $receiver, $message_text]);
-    } else {
-        // Redirect dengan error jika tidak saling follow
-        header("Location: chat.php?u=" . urlencode($receiver) . "&error=not_mutual");
-        exit;
-    }
+    $q->execute([$sender, $receiver, $message_text]);
 
 } catch (PDOException $e) {
-    // Handle error
+    // error_log("Error sending message: " . $e->getMessage()); 
 }
 
 // Redirect kembali ke ruang obrolan

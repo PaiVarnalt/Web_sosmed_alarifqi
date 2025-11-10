@@ -62,7 +62,7 @@ if (isset($_SESSION['username'])) {
       <a href="modul/bookmarks.php" class="nav-link"><i class="fa-regular fa-bookmark"></i> <span>Bookmarks</span></a>
       <a href="modul/communities.php" class="nav-link"><i class="fa-solid fa-user-group"></i> <span>Communities</span></a>
       <a href="modul/profile.php" class="nav-link"><i class="fa-regular fa-user"></i> <span>Profile</span></a>
-      <a href="#" class="nav-link"><i class="fa-solid fa-gear"></i> <span>Settings</span></a>
+      <a href="modul/setting.php" class="nav-link"><i class="fa-solid fa-gear"></i> <span>Settings</span></a>
     </nav>
 
     <div class="px-3 mt-4">
