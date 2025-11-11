@@ -50,18 +50,18 @@ try {
         $_SESSION['username'] = $new_user; 
     }
 
-    header("Location: settings.php?status=success");
+    header("Location: setting.php?status=success");
     exit;
 
 } catch (PDOException $e) {
     // Tangani error duplicate entry atau error lainnya
     if ($e->getCode() === '23000' || strpos($e->getMessage(), '1062') !== false) {
-        header("Location: settings.php?status=exists");
+        header("Location: setting.php?status=exists");
         exit;
     }
     
     // error_log("Error updating profile: " . $e->getMessage()); 
-    header("Location: settings.php?status=error");
+    header("Location: setting.php?status=error");
     exit;
 }
 ?>

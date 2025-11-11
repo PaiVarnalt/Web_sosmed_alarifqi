@@ -67,7 +67,7 @@ echo "
  }
 
  // 🔍 Cari komunitas (Tidak berubah)
- $c = $pdo->prepare("SELECT * FROM communities WHERE CommunityName LIKE ? LIMIT 10");
+ $c = $pdo->prepare("SELECT * FROM community WHERE CommunityName LIKE ? LIMIT 10");
  $c->execute(["%$search%"]);
  if ($c->rowCount() > 0) {
   echo "<h5 class='mt-4 mb-2'>👥 Komunitas</h5>";

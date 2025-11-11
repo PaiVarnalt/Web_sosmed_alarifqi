@@ -98,13 +98,13 @@ if ($search_user) {
                     echo "</a>";
                 }
             } else {
-                echo "<p class='p-3 text-muted'>Anda belum memulai chat.</p>";
+                echo "<p class='p-3 '>Anda belum memulai chat.</p>";
             }
             ?>
             </div>
         </div>
 
-        <div class="col-md-4 p-5 text-center text-muted border-end main-content">
+        <div class="col-md-4 p-5 text-center  border-end main-content">
             <i class="fa-solid fa-envelope fa-3x mb-3"></i>
             <h4>Pilih percakapan</h4>
             <p>Pilih dari daftar di kiri atau cari pengguna di kanan untuk mulai *chatting*.</p>
@@ -121,7 +121,7 @@ if ($search_user) {
             </form>
 
             <div class="messages-list-container">
-                <h6 class="mt-3 mb-2 text-muted">Hanya Saling Follow yang bisa chat:</h6>
+                <h6 class="mt-3 mb-2 ">Hanya Saling Follow yang bisa chat:</h6>
                 <div class="list-group list-group-flush">
                 <?php if ($q_mutual_follows->rowCount() > 0): ?>
                     <?php while ($user = $q_mutual_follows->fetch(PDO::FETCH_ASSOC)): 
