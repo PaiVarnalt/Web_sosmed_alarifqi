@@ -19,7 +19,7 @@ $search = trim($_GET['q'] ?? '');
  <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" rel="stylesheet">
  <link href="../asset/css/stlye.css" rel="stylesheet">
 </head>
-<body class="bg-light">
+<body class="">
 
 <div class="container-fluid">
  <div class="row">
@@ -55,7 +55,7 @@ $namaLengkap = $user['FirstName'] . ' ' . $user['LastName'];
 
 echo "
             <a href='profile.php?u=" . urlencode($user['UserName']) . "' class='text-decoration-none'>
-<div class='d-flex align-items-center border rounded p-2 mb-2 bg-white shadow-sm'>
+<div class='d-flex align-items-center border rounded p-2 mb-2 shadow-sm'>
  <img src='{$foto}' width='45' height='45' class='rounded-circle me-2'>
  <div>
   <strong>@{$user['UserName']}</strong><br>
@@ -73,7 +73,7 @@ echo "
   echo "<h5 class='mt-4 mb-2'>👥 Komunitas</h5>";
   while ($com = $c->fetch(PDO::FETCH_ASSOC)) {
 echo "
-<div class='border rounded p-2 mb-2 bg-white shadow-sm'>
+<div class='border rounded p-2 mb-2 shadow-sm'>
  <strong>{$com['CommunityName']}</strong><br>
  <small class='text-muted'>{$com['Description']}</small>
 </div>";
@@ -87,7 +87,7 @@ echo "
   echo "<h5 class='mt-4 mb-2'>📝 Postingan</h5>";
   while ($post = $p->fetch(PDO::FETCH_ASSOC)) {
 echo "
-<div class='border rounded p-2 mb-2 bg-white shadow-sm'>
+<div class='border rounded p-2 mb-2 shadow-sm'>
  <strong>@{$post['UserName']}</strong><br>
  " . htmlspecialchars($post['Text']) . "
 </div>";
@@ -102,7 +102,7 @@ echo "
  echo "<h5 class='fw-bold mb-3'>🔥 Trending Post</h5>";
  $q = $pdo->query("SELECT * FROM post ORDER BY PostID DESC LIMIT 10");
  while ($p = $q->fetch(PDO::FETCH_ASSOC)) {
-  echo "<div class='border rounded p-2 mb-2 bg-white shadow-sm'>
+  echo "<div class='border rounded p-2 mb-2 shadow-sm'>
 <strong>@{$p['UserName']}</strong><br>" .
 htmlspecialchars($p['Text']) .
   "</div>";

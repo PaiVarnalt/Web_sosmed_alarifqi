@@ -20,7 +20,7 @@ $current_user_name = $_SESSION['username'];
   <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" rel="stylesheet">
   <link href="../asset/css/stlye.css" rel="stylesheet"> 
 </head>
-<body class="bg-light">
+<body class="">
 
 <div class="container-fluid">
     <div class="row">

@@ -59,7 +59,7 @@ if ($current_user != $view_user) {
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
     <link href="../asset/css/stlye.css" rel="stylesheet">
 </head>
-<body class="bg-light">
+<body>
 
 <div class="container-fluid">
     <div class="row">
@@ -77,12 +77,11 @@ if ($current_user != $view_user) {
             <div class="d-flex justify-content-between align-items-center mb-3">
                 <div>
                     <h4 class="fw-bold mb-0">@<?= htmlspecialchars($profile['UserName']) ?></h4>
-                    <h5 class="text-muted mt-0"><?= htmlspecialchars($profile['FirstName'] . ' ' . $profile['LastName']) ?></h5>
                 </div>
                 
                 <?php if ($current_user != $view_user): ?>
                 <a href="action_follow.php?user=<?= urlencode($view_user) ?>" 
-                    class="btn <?= $is_following ? 'btn-danger' : 'btn-dark' ?>">
+                    class="btn <?= $is_following ? 'btn-danger' : 'btn-primary' ?>">
                     <?= $is_following ? 'Unfollow' : 'Follow' ?>
                 </a>
                 <?php endif; ?>
@@ -118,7 +117,7 @@ if ($current_user != $view_user) {
                     
                     // ... (Logika Postingan)
                     
-                    echo "<div class='border rounded p-3 mb-3 bg-white shadow-sm'>";
+                    echo "<div class='border rounded p-3 mb-3 shadow-sm'>";
                     
                     if (!empty($post['ImageName'])) {
                         echo "<img src='../asset/img/post/" . htmlspecialchars($post['ImageName']) . "' class='img-fluid rounded mb-2' alt='Post Image'>";
